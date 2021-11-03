@@ -10,16 +10,16 @@ SocketConnection::SocketConnection() {
 }
 
 int SocketConnection::CreateServer(const char *port) {
-    struct addrinfo *result = nullptr, *ptr = nullptr, sockaddr{};
+    struct addrinfo *result = nullptr, *ptr = nullptr, sockinfo{};
 
-    ZeroMemory(&sockaddr, sizeof(sockaddr));
-    sockaddr.ai_family = AF_INET;
-    sockaddr.ai_socktype = SOCK_STREAM;
-    sockaddr.ai_protocol = IPPROTO_TCP;
-    sockaddr.ai_flags = AI_PASSIVE;
+    ZeroMemory(&sockinfo, sizeof(sockinfo));
+    sockinfo.ai_family = AF_INET;
+    sockinfo.ai_socktype = SOCK_STREAM;
+    sockinfo.ai_protocol = IPPROTO_TCP;
+    sockinfo.ai_flags = AI_PASSIVE;
 
     // Resolving the local address and port to be used by the server
-    int iResult = getaddrinfo(nullptr, port, &sockaddr, &result);
+    int iResult = getaddrinfo(nullptr, port, &sockinfo, &result);
     if (iResult != 0) {
         printf("getaddrinfo failed: %d\n", iResult);
         WSACleanup();
@@ -47,7 +47,7 @@ int SocketConnection::CreateServer(const char *port) {
     return 0;
 }
 
-int SocketConnection::ListenServer(int _maxConnections) {
+int SocketConnection::OpenServerConnection(int _maxConnections) {
     this->maxConnections = _maxConnections ? _maxConnections : SOMAXCONN;
     if (listen(Socket, this->maxConnections) == SOCKET_ERROR) {
         printf("Listen failed with error: %ld\n", WSAGetLastError());
@@ -67,3 +67,45 @@ void SocketConnection::CloseConnection() {
     this->Socket = INVALID_SOCKET;
     WSACleanup();
 }
+
+int SocketConnection::CreateClient(const char *ip, const char *port) {
+    struct addrinfo *result = nullptr, *ptr = nullptr, sockinfo{};
+
+    ZeroMemory(&sockinfo, sizeof(sockinfo));
+    sockinfo.ai_family = AF_UNSPEC;
+    sockinfo.ai_socktype = SOCK_STREAM;
+    sockinfo.ai_protocol = IPPROTO_TCP;
+
+    int iResult = getaddrinfo(ip, port, &sockinfo, &result);
+    if (iResult != 0) {
+        printf("getaddrinfo failed: %d\n", iResult);
+        WSACleanup();
+        return 1;
+    }
+
+    ptr = result;
+    this->Socket = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
+    if (this->Socket == INVALID_SOCKET) {
+        printf("Error at socket(): %ld\n", WSAGetLastError());
+        freeaddrinfo(result);
+        WSACleanup();
+        return 1;
+    }
+
+    iResult = connect(this->Socket, ptr->ai_addr, (int) ptr->ai_addrlen);
+    if (iResult == SOCKET_ERROR) {
+        closesocket(this->Socket);
+        this->Socket = INVALID_SOCKET;
+    }
+
+    freeaddrinfo(result);
+
+    if (this->Socket == INVALID_SOCKET) {
+        printf("Unable to connect to server!\n");
+        WSACleanup();
+        return 1;
+    }
+
+    return 0;
+}
+

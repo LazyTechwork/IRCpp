@@ -12,8 +12,8 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-Bstatic,--whole-archi
 set(COMMON_SOURCE_FILES src/common/SocketConnection.cpp)
 set(COMMON_HEADER_FILES src/common/SocketConnection.h)
 
-set(CLIENT_SOURCE_FILES IRCppClient.cpp)
-set(CLIENT_HEADER_FILES)
+set(CLIENT_SOURCE_FILES IRCppClient.cpp src/client/ClientSocket.cpp)
+set(CLIENT_HEADER_FILES src/client/ClientSocket.h)
 
 set(SERVER_SOURCE_FILES IRCppServer.cpp src/server/ServerSocket.cpp)
 set(SERVER_HEADER_FILES src/server/ServerSocket.h)
