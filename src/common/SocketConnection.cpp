@@ -20,12 +20,14 @@ int SocketConnection::CreateServer(const char *port) {
 
     // Resolving the local address and port to be used by the server
     int iResult = getaddrinfo(nullptr, port, &sockinfo, &result);
+    printf("Resolving address...\n");
     if (iResult != 0) {
         printf("getaddrinfo failed: %d\n", iResult);
         WSACleanup();
         return 1;
     }
 
+    printf("Opening socket...\n");
     Socket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
 
     if (Socket == INVALID_SOCKET) {
@@ -35,6 +37,7 @@ int SocketConnection::CreateServer(const char *port) {
         return 1;
     }
 
+    printf("Binding IP address...\n");
     iResult = bind(Socket, result->ai_addr, (int) result->ai_addrlen);
     freeaddrinfo(result);
     if (iResult == SOCKET_ERROR) {
@@ -43,6 +46,8 @@ int SocketConnection::CreateServer(const char *port) {
         WSACleanup();
         return 1;
     }
+
+    printf("Server binded at %s:%s\n", result->ai_addr->sa_data, port);
 
     return 0;
 }
@@ -55,6 +60,7 @@ int SocketConnection::OpenServerConnection(int _maxConnections) {
         WSACleanup();
         return 1;
     }
+    printf("Server started listening\n");
     return 0;
 }
 
