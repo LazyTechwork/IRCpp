@@ -1,7 +1,3 @@
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#include <cstdio>
-
 #include "SocketConnection.h"
 
 SocketConnection::SocketConnection() {
@@ -60,4 +56,14 @@ int SocketConnection::ListenServer(int _maxConnections) {
         return 1;
     }
     return 0;
+}
+
+SOCKET SocketConnection::getSocket() const {
+    return Socket;
+}
+
+void SocketConnection::CloseConnection() {
+    closesocket(this->Socket);
+    this->Socket = INVALID_SOCKET;
+    WSACleanup();
 }
