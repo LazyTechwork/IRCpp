@@ -19,9 +19,10 @@ public:
      * Creates connection suitable for server
      *
      * @param port of server
+     * @param ip of server
      * @return int connection creation status
      */
-    int CreateServer(const char *port);
+    int CreateServer(const char *port, const char *ip = "localhost");
 
     /**
      * Creates connection suitable for client

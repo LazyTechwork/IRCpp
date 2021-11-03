@@ -1,6 +1,14 @@
 #include <iostream>
+#include <SocketConnection.h>
+#include <conio.h>
 
 int main() {
-    std::cout << "Server!" << std::endl;
+    const char PORT[] = "1376";
+    auto *socketConnection = new SocketConnection();
+    socketConnection->CreateServer(PORT);
+    socketConnection->OpenServerConnection();
+    _getch();
+    socketConnection->CloseConnection();
+    delete socketConnection;
     return 0;
 }

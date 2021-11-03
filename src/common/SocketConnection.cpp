@@ -9,8 +9,8 @@ SocketConnection::SocketConnection() {
     Socket = INVALID_SOCKET;
 }
 
-int SocketConnection::CreateServer(const char *port) {
-    struct addrinfo *result = nullptr, *ptr = nullptr, sockinfo{};
+int SocketConnection::CreateServer(const char *port, const char *ip) {
+    struct addrinfo *result = nullptr, sockinfo{};
 
     ZeroMemory(&sockinfo, sizeof(sockinfo));
     sockinfo.ai_family = AF_INET;
@@ -19,7 +19,7 @@ int SocketConnection::CreateServer(const char *port) {
     sockinfo.ai_flags = AI_PASSIVE;
 
     // Resolving the local address and port to be used by the server
-    int iResult = getaddrinfo(nullptr, port, &sockinfo, &result);
+    int iResult = getaddrinfo(ip, port, &sockinfo, &result);
     printf("Resolving address...\n");
     if (iResult != 0) {
         printf("getaddrinfo failed: %d\n", iResult);
@@ -47,7 +47,9 @@ int SocketConnection::CreateServer(const char *port) {
         return 1;
     }
 
-    printf("Server binded at %s:%s\n", result->ai_addr->sa_data, port);
+    printf("Server binded at %s:%s\n",
+           inet_ntoa((struct in_addr) ((struct sockaddr_in *) result->ai_addr)->sin_addr),
+           port);
 
     return 0;
 }
