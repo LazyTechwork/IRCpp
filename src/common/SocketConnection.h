@@ -13,10 +13,25 @@ private:
 public:
     SocketConnection();
 
+    /**
+     * Creates connection suitable for server
+     *
+     * @param port of server
+     * @return int connection creation status
+     */
     int CreateServer(const char *port);
 
+    /**
+     * Open port and listen on it
+     *
+     * @param _maxConnections if zero then default value applied
+     * @return int status
+     */
     int ListenServer(int _maxConnections = 0);
 
+    /**
+     * Closes connection on socket
+     */
     void CloseConnection();
 
     [[nodiscard]] SOCKET getSocket() const;
