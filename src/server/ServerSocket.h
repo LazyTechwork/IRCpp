@@ -19,6 +19,11 @@ public:
     explicit ServerSocket(SocketConnection *connection);
 
     /**
+     * Remove client from vector without shutdowning and closing connection
+     * */
+    void DeleteClient(int clientId);
+
+    /**
      * Listen for next connection. Recommended to run in separate thread.
      * Functions adds new client automatically in clients vector.
      */
@@ -38,7 +43,7 @@ public:
      * @param clientId describes what client listen to
      * @return std::string data
      */
-    int SendData(int clientId);
+    int SendData(int clientId, const std::string &data);
 
     /**
      * Listen for next bytes on specified connection. Recommended to run in separate thread.
@@ -46,5 +51,5 @@ public:
      * @param clientId describes what client listen to
      * @return std::string data
      */
-    int Broadcast(int excluding = -1);
+    int Broadcast(const std::string &data, int excluding = -1);
 };
