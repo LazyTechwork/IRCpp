@@ -62,7 +62,10 @@ SOCKET SocketConnection::getSocket() const {
     return Socket;
 }
 
-void SocketConnection::CloseConnection() {
+void SocketConnection::CloseConnection(bool isClient) {
+    if (isClient)
+        shutdown(this->Socket, SD_SEND);
+
     closesocket(this->Socket);
     this->Socket = INVALID_SOCKET;
     WSACleanup();
