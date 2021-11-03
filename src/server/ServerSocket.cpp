@@ -4,16 +4,17 @@ ServerSocket::ServerSocket(SocketConnection *connection) {
     this->connection = connection;
 }
 
-void ServerSocket::ListenForConnection() {
+int ServerSocket::WaitForConnection() {
     SOCKET sock = this->connection->getSocket();
     SOCKET incomingConnection = accept(sock, nullptr, nullptr);
     if (incomingConnection == INVALID_SOCKET) {
         printf("accept failed: %d\n", WSAGetLastError());
         closesocket(sock);
         WSACleanup();
-        return;
+        return -1;
     }
     this->clients.push_back(incomingConnection);
+    return (int) this->clients.size() - 1;
 }
 
 std::string ServerSocket::ListenForData(int clientId) {
@@ -31,6 +32,8 @@ std::string ServerSocket::ListenForData(int clientId) {
 
 int ServerSocket::SendData(int clientId, const std::string &data) {
     SOCKET Client = this->clients.at(clientId);
+    if (Client == 0)
+        return -1;
     int iResult = send(Client, data.c_str(), (int) strlen(data.c_str()), 0);
     if (iResult == SOCKET_ERROR) {
         printf("client #%d closed connection. removing from clients list\n", clientId);
@@ -52,6 +55,16 @@ int ServerSocket::Broadcast(const std::string &data, int excluding) {
 }
 
 void ServerSocket::DeleteClient(int clientId) {
-    this->clients.erase(this->clients.begin() + clientId);
+    *(this->clients.begin() + clientId) = 0;
     printf("client #%d removed from clients list\n", clientId);
+}
+
+bool ServerSocket::IsClientAlive(int clientId) {
+    if (this->SendData(clientId, "ping") == -1)
+        return false;
+    return true;
+}
+
+bool ServerSocket::IsSocketAlive() {
+    return this->connection->getSocket() != INVALID_SOCKET;
 }

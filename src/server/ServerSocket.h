@@ -27,7 +27,7 @@ public:
      * Listen for next connection. Recommended to run in separate thread.
      * Functions adds new client automatically in clients vector.
      */
-    void ListenForConnection();
+    int WaitForConnection();
 
     /**
      * Listen for next bytes on specified connection. Recommended to run in separate thread.
@@ -52,4 +52,14 @@ public:
      * @return std::string data
      */
     int Broadcast(const std::string &data, int excluding = -1);
+
+    /**
+     * Checking is client alive
+     * */
+    bool IsClientAlive(int clientId);
+
+    /**
+     * Checking is server socket alive
+     * */
+    bool IsSocketAlive();
 };
