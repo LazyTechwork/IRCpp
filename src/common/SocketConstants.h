@@ -1,3 +1,3 @@
 #pragma once
 
-#define DEFAULT_BUFLEN 2048
+#define DEFAULT_BUFLEN 512

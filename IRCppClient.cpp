@@ -19,15 +19,19 @@ int main() {
     auto *socketConnection = new SocketConnection();
     socketConnection->CreateClient(IP, PORT);
     auto *client = new ClientSocket(socketConnection);
-    std::string buf;
-    std::cin >> buf;
-    client->SendData(buf);
     printf("%s Creating threads for listening...\n", Logger::getFormattedTime().c_str());
     std::thread dataThread(dataListenThread, client);
-    dataThread.detach();
+
+    std::string buf;
+    while (buf != "!quit") {
+        client->SendData(buf);
+        std::cin >> buf;
+    }
 
     _getch();
+    client->SendData("!disconnect");
     //    Terminating threads
+    dataThread.detach();
     TerminateThread((HANDLE) dataThread.native_handle(), 0);
     return 0;
 }

@@ -11,10 +11,15 @@
 #include <cstdio>
 #include <string>
 
+struct ServerClient {
+    SOCKET client;
+    bool isAlive;
+};
+
 class ServerSocket {
 private:
     SocketConnection *connection;
-    std::vector<SOCKET> clients = {};
+    std::vector<ServerClient> clients = {};
 public:
     explicit ServerSocket(SocketConnection *connection);
 
@@ -62,4 +67,9 @@ public:
      * Checking is server socket alive
      * */
     bool IsSocketAlive();
+
+    /**
+     * Pinging all clients
+     * */
+    void PingAllClients();
 };

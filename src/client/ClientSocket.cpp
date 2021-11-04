@@ -7,7 +7,7 @@ ClientSocket::ClientSocket(SocketConnection *connection) {
 std::string ClientSocket::ListenForData() {
     char recvbuf[DEFAULT_BUFLEN];
     int iResult = recv(this->connection->getSocket(), recvbuf, DEFAULT_BUFLEN, 0);
-    if (iResult == 0) {
+    if (iResult == -1) {
         this->Shutdown();
         return "Server closed connection";
     }
@@ -28,7 +28,5 @@ void ClientSocket::Shutdown() {
 }
 
 bool ClientSocket::IsServerAlive() {
-    if (this->connection->getSocket() == INVALID_SOCKET || this->SendData("ping") == -1)
-        return false;
-    return true;
+    return this->connection->getSocket() != INVALID_SOCKET;
 }
