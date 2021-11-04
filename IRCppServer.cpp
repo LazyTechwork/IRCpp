@@ -2,23 +2,26 @@
 #include <conio.h>
 #include <ServerSocket.h>
 #include <thread>
+#include <Logger.h>
 
-[[noreturn]] void dataListenThread(ServerSocket *server, int clientId) {
-    printf("Started listening for data of client #%d\n", clientId);
+void dataListenThread(ServerSocket *server, int clientId) {
+    printf("%s Started listening for data of client #%d\n", Logger::getFormattedTime().c_str(), clientId);
     while (server->IsClientAlive(clientId))
-        printf("%s\n", server->ListenForData(clientId).c_str());
-    printf("Client #%d dead, stopping listening for data\n", clientId);
+        printf("%s Client #%d >> %s\n", Logger::getFormattedTime().c_str(), clientId,
+               server->ListenForData(clientId).c_str());
+    printf("%s Client #%d dead, stopping listening for data\n", Logger::getFormattedTime().c_str(), clientId);
 }
 
-[[noreturn]] void connectionsListenThread(ServerSocket *server, std::vector<std::thread *> *dataListenThreads) {
-    printf("Started connections listening\n");
+void connectionsListenThread(ServerSocket *server, std::vector<std::thread *> *dataListenThreads) {
+    printf("%s Started connections listening\n", Logger::getFormattedTime().c_str());
     while (server->IsSocketAlive()) {
         int clientId = server->WaitForConnection();
+        server->SendData(clientId, "Successfully connected!");
         std::thread dlt(dataListenThread, server, clientId);
-        dlt.join();
+        dlt.detach();
         dataListenThreads->push_back(&dlt);
     }
-    printf("Connections listening stopped\n");
+    printf("%s Connections listening stopped\n", Logger::getFormattedTime().c_str());
 }
 
 int main() {
@@ -28,15 +31,18 @@ int main() {
     socketConnection->OpenServerConnection();
     auto *server = new ServerSocket(socketConnection);
 
-    printf("Creating threads for listening...\n");
+    printf("%s Creating threads for listening...\n", Logger::getFormattedTime().c_str());
     std::vector<std::thread *> dataListenThreads;
-    std::thread connsThread(connectionsListenThread, server, &dataListenThreads);
-
-    connsThread.join();
+    std::thread connectionsThread(connectionsListenThread, server, &dataListenThreads);
+    connectionsThread.detach();
 
     _getch();
+//    Terminating threads
+    for (auto &thread: dataListenThreads)
+        TerminateThread((HANDLE) thread->native_handle(), 0);
+    TerminateThread((HANDLE) connectionsThread.native_handle(), 0);
+
+//    Closing socket connection
     socketConnection->CloseConnection();
-    delete socketConnection;
-    delete server;
     return 0;
 }

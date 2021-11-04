@@ -1,10 +1,11 @@
 #include "SocketConnection.h"
+#include "Logger.h"
 
 SocketConnection::SocketConnection() {
     WSADATA wsaData;
     int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (iResult != 0) {
-        printf("WSAStartup failed: %d\n", iResult);
+        printf("%s WSAStartup failed: %d\n", Logger::getFormattedTime().c_str(), iResult);
     }
     Socket = INVALID_SOCKET;
 }
@@ -20,36 +21,35 @@ int SocketConnection::CreateServer(const char *port, const char *ip) {
 
     // Resolving the local address and port to be used by the server
     int iResult = getaddrinfo(ip, port, &sockinfo, &result);
-    printf("Resolving address...\n");
+    printf("%s Resolving address...\n", Logger::getFormattedTime().c_str());
     if (iResult != 0) {
-        printf("getaddrinfo failed: %d\n", iResult);
+        printf("%s getaddrinfo failed: %d\n", Logger::getFormattedTime().c_str(), iResult);
         WSACleanup();
         return 1;
     }
 
-    printf("Opening socket...\n");
+    printf("%s Opening socket...\n", Logger::getFormattedTime().c_str());
     Socket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
 
     if (Socket == INVALID_SOCKET) {
-        printf("Error at socket(): %ld\n", WSAGetLastError());
+        printf("%s Error at socket(): %ld\n", Logger::getFormattedTime().c_str(), WSAGetLastError());
         freeaddrinfo(result);
         WSACleanup();
         return 1;
     }
 
-    printf("Binding IP address...\n");
+    printf("%s Binding IP address...\n", Logger::getFormattedTime().c_str());
     iResult = bind(Socket, result->ai_addr, (int) result->ai_addrlen);
     freeaddrinfo(result);
     if (iResult == SOCKET_ERROR) {
-        printf("bind failed with error: %d\n", WSAGetLastError());
+        printf("%s bind failed with error: %d\n", Logger::getFormattedTime().c_str(), WSAGetLastError());
         closesocket(Socket);
         WSACleanup();
         return 1;
     }
 
-    printf("Server binded at %s:%s\n",
-           inet_ntoa((struct in_addr) ((struct sockaddr_in *) result->ai_addr)->sin_addr),
-           port);
+    printf("%s Server binded at %s:%s\n", Logger::getFormattedTime().c_str(),
+           inet_ntoa((struct in_addr) ((struct sockaddr_in *) result->ai_addr)->sin_addr), port);
 
     return 0;
 }
@@ -57,12 +57,12 @@ int SocketConnection::CreateServer(const char *port, const char *ip) {
 int SocketConnection::OpenServerConnection(int _maxConnections) {
     this->maxConnections = _maxConnections ? _maxConnections : SOMAXCONN;
     if (listen(Socket, this->maxConnections) == SOCKET_ERROR) {
-        printf("Listen failed with error: %ld\n", WSAGetLastError());
+        printf("%s Listen failed with error: %ld\n", Logger::getFormattedTime().c_str(), WSAGetLastError());
         closesocket(Socket);
         WSACleanup();
         return 1;
     }
-    printf("Server started listening\n");
+    printf("%s Server started listening\n", Logger::getFormattedTime().c_str());
     return 0;
 }
 
@@ -87,32 +87,38 @@ int SocketConnection::CreateClient(const char *ip, const char *port) {
     sockinfo.ai_socktype = SOCK_STREAM;
     sockinfo.ai_protocol = IPPROTO_TCP;
 
+    printf("%s Resolving address...\n", Logger::getFormattedTime().c_str());
     int iResult = getaddrinfo(ip, port, &sockinfo, &result);
     if (iResult != 0) {
-        printf("getaddrinfo failed: %d\n", iResult);
+        printf("%s getaddrinfo failed: %d\n", Logger::getFormattedTime().c_str(), iResult);
         WSACleanup();
         return 1;
     }
 
     ptr = result;
+    printf("%s Opening socket...\n", Logger::getFormattedTime().c_str());
     this->Socket = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
     if (this->Socket == INVALID_SOCKET) {
-        printf("Error at socket(): %ld\n", WSAGetLastError());
+        printf("%s Error at socket(): %ld\n", Logger::getFormattedTime().c_str(), WSAGetLastError());
         freeaddrinfo(result);
         WSACleanup();
         return 1;
     }
 
+    printf("%s Connecting...\n", Logger::getFormattedTime().c_str());
     iResult = connect(this->Socket, ptr->ai_addr, (int) ptr->ai_addrlen);
     if (iResult == SOCKET_ERROR) {
         closesocket(this->Socket);
         this->Socket = INVALID_SOCKET;
     }
 
+    printf("%s Server listening at %s:%s\n", Logger::getFormattedTime().c_str(),
+           inet_ntoa((struct in_addr) ((struct sockaddr_in *) result->ai_addr)->sin_addr),
+           port);
     freeaddrinfo(result);
 
     if (this->Socket == INVALID_SOCKET) {
-        printf("Unable to connect to server!\n");
+        printf("%s Unable to connect to server!\n", Logger::getFormattedTime().c_str());
         WSACleanup();
         return 1;
     }

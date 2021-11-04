@@ -26,3 +26,9 @@ int ClientSocket::SendData(const std::string &data) {
 void ClientSocket::Shutdown() {
     this->connection->CloseConnection(true);
 }
+
+bool ClientSocket::IsServerAlive() {
+    if (this->connection->getSocket() == INVALID_SOCKET || this->SendData("ping") == -1)
+        return false;
+    return true;
+}

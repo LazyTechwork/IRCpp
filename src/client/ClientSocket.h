@@ -36,4 +36,9 @@ public:
      */
     void Shutdown();
 
+    /**
+     * Checks is server alive
+     */
+    bool IsServerAlive();
+
 };

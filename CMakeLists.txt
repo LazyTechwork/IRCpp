@@ -9,8 +9,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD_LIBRARIES "-static-libgcc -static-libstdc++ -lwsock32 -lws2_32 ${CMAKE_CXX_STANDARD_LIBRARIES}")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-Bstatic,--whole-archive -lwinpthread -Wl,--no-whole-archive")
 
-set(COMMON_SOURCE_FILES src/common/SocketConnection.cpp)
-set(COMMON_HEADER_FILES src/common/SocketConnection.h src/common/SocketConstants.h)
+set(COMMON_SOURCE_FILES src/common/SocketConnection.cpp src/common/Logger.cpp)
+set(COMMON_HEADER_FILES src/common/SocketConnection.h src/common/SocketConstants.h src/common/Logger.h)
 
 set(CLIENT_SOURCE_FILES IRCppClient.cpp src/client/ClientSocket.cpp)
 set(CLIENT_HEADER_FILES src/client/ClientSocket.h)

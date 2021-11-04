@@ -1,4 +1,5 @@
 #include <ServerSocket.h>
+#include <Logger.h>
 
 ServerSocket::ServerSocket(SocketConnection *connection) {
     this->connection = connection;
@@ -8,7 +9,7 @@ int ServerSocket::WaitForConnection() {
     SOCKET sock = this->connection->getSocket();
     SOCKET incomingConnection = accept(sock, nullptr, nullptr);
     if (incomingConnection == INVALID_SOCKET) {
-        printf("accept failed: %d\n", WSAGetLastError());
+        printf("%s Accept failed: %d\n", Logger::getFormattedTime().c_str(), WSAGetLastError());
         closesocket(sock);
         WSACleanup();
         return -1;
@@ -22,10 +23,10 @@ std::string ServerSocket::ListenForData(int clientId) {
     SOCKET Client = this->clients.at(clientId);
     int iResult = recv(Client, recvbuf, DEFAULT_BUFLEN, 0);
     if (iResult == 0) {
-        printf("client #%d closed connection. removing from clients list\n", clientId);
+        printf("%s Client #%d closed connection. removing from clients list\n", Logger::getFormattedTime().c_str(), clientId);
         this->DeleteClient(clientId);
     } else
-        printf("client #%d sent %d byte(s)\n", clientId, iResult);
+        printf("%s Client #%d sent %d byte(s)\n", Logger::getFormattedTime().c_str(), clientId, iResult);
 
     return (recvbuf);
 }
@@ -36,7 +37,7 @@ int ServerSocket::SendData(int clientId, const std::string &data) {
         return -1;
     int iResult = send(Client, data.c_str(), (int) strlen(data.c_str()), 0);
     if (iResult == SOCKET_ERROR) {
-        printf("client #%d closed connection. removing from clients list\n", clientId);
+        printf("%s Client #%d closed connection. removing from clients list\n", Logger::getFormattedTime().c_str(), clientId);
         this->DeleteClient(clientId);
         return -1;
     }
@@ -56,7 +57,6 @@ int ServerSocket::Broadcast(const std::string &data, int excluding) {
 
 void ServerSocket::DeleteClient(int clientId) {
     *(this->clients.begin() + clientId) = 0;
-    printf("client #%d removed from clients list\n", clientId);
 }
 
 bool ServerSocket::IsClientAlive(int clientId) {
