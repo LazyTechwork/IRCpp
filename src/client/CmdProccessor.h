@@ -4,6 +4,7 @@
 #include <Utils.h>
 #include <CommandDefinitions.h>
 
+typedef void (* HandlePrint)(std::string msg);
 namespace Client {
     class CmdProccessor {
     private:
