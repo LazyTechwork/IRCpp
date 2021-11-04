@@ -14,6 +14,10 @@ void dataListenThread(ClientSocket *client) {
 }
 
 int main() {
+    setlocale(0, "ru_RU.UTF-8");
+    system("chcp 65001");
+    system("cls");
+
     const char IP[] = "127.0.0.1";
     const char PORT[] = "1376";
     auto *socketConnection = new SocketConnection();

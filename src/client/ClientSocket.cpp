@@ -11,7 +11,10 @@ std::string ClientSocket::ListenForData() {
         this->Shutdown();
         return "Server closed connection";
     }
-    return (recvbuf);
+    std::string result(recvbuf);
+    if (iResult > 0 && result.size() > iResult)
+        result.resize(iResult);
+    return result;
 }
 
 int ClientSocket::SendData(const std::string &data) {

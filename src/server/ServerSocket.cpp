@@ -31,7 +31,10 @@ std::string ServerSocket::ListenForData(int clientId) {
     } else
         printf("%s Client #%d sent %d byte(s)\n", Logger::getFormattedTime().c_str(), clientId, iResult);
 
-    return (recvbuf);
+    std::string result(recvbuf);
+    if (iResult > 0 && result.size() > iResult)
+        result.resize(iResult);
+    return result;
 }
 
 int ServerSocket::SendData(int clientId, const std::string &data) {

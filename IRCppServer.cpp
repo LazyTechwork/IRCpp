@@ -35,6 +35,10 @@ void pingThread(ServerSocket *server) {
 }
 
 int main() {
+    setlocale(0, "ru_RU.UTF-8");
+    system("chcp 65001");
+    system("cls");
+
     const char PORT[] = "1376";
     auto *socketConnection = new SocketConnection();
     socketConnection->CreateServer(PORT);
