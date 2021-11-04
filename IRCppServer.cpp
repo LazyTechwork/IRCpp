@@ -30,7 +30,7 @@ void connectionsListenThread(ServerSocket *server, std::vector<std::thread *> *d
 void pingThread(ServerSocket *server) {
     while (server->IsSocketAlive()) {
         server->PingAllClients();
-        Sleep(5000);
+        Sleep(25000);
     }
 }
 

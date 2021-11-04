@@ -1,5 +1,6 @@
 #include <ServerSocket.h>
 #include <Logger.h>
+#include <CommandDefinitions.h>
 
 ServerSocket::ServerSocket(SocketConnection *connection) {
     this->connection = connection;
@@ -77,7 +78,7 @@ bool ServerSocket::IsSocketAlive() {
 void ServerSocket::PingAllClients() {
     for (int i = 0, l = (int) this->clients.size(); i < l; ++i) {
         if (this->clients.at(i).isAlive)
-            this->SendData(i, "!ping");
+            this->SendData(i, CMD_PING);
     }
 }
 
