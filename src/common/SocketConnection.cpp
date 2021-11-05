@@ -48,8 +48,8 @@ int SocketConnection::CreateServer(const char *port, const char *ip) {
         return 1;
     }
 
-    printf("%s Server binded at %s:%s\n", Logger::getFormattedTime().c_str(),
-           inet_ntoa((struct in_addr) ((struct sockaddr_in *) result->ai_addr)->sin_addr), port);
+    /*printf("%s Server binded at %s:%s\n", Logger::getFormattedTime().c_str(),
+           inet_ntoa((struct in_addr) ((struct sockaddr_in *) result->ai_addr)->sin_addr), port);*/
 
     return 0;
 }

@@ -7,7 +7,7 @@
 #include <CmdProcessor.h>
 
 void WriteToConsole(std::string &msg) {
-    printf("%s %s", Logger::getFormattedTime().c_str(), msg.c_str());
+    printf("%s %s\n", Logger::getFormattedTime().c_str(), msg.c_str());
 }
 
 void dataListenThread(ClientSocket *client) {
@@ -17,6 +17,7 @@ void dataListenThread(ClientSocket *client) {
         cmdProccessor.acceptMessage(client->ListenForData(), (HandlePrint) WriteToConsole);
     }
     printf("%s Server dead, disconnecting\n", Logger::getFormattedTime().c_str());
+    exit(0);
 }
 
 int main() {
@@ -41,8 +42,9 @@ int main() {
     client->SendData(Commands[CMD_JOIN] + " " + nickname);
 
     std::string buf;
+    std::cin >> buf;
     while (buf != "!quit") {
-        client->SendData(buf);
+        client->SendData(Commands[CMD_MESSAGE] + " " + buf);
         std::cin >> buf;
     }
 

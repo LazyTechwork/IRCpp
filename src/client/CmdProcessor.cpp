@@ -15,13 +15,13 @@ void Client::CmdProcessor::acceptMessage(const std::string& msg, HandlePrint han
     } else if (cmd == CMD_JOIN) {
         handlePrint(args.at(0) + " joined server");
     } else if (cmd == CMD_WHISPER) {
-        std::string message = Utils::JoinString(args.begin() + 1, args.end(), " ");
+        std::string message = Utils::JoinString(std::vector(args.begin() + 1, args.end()), " ");
         handlePrint(args.at(0) + " whispered you: " + message);
     } else if (cmd == CMD_MESSAGE) {
-        std::string message = Utils::JoinString(args.begin() + 1, args.end(), " ");
+        std::string message = Utils::JoinString(std::vector(args.begin() + 1, args.end()), " ");
         handlePrint(args.at(0) + " >> " + message);
     } else if (cmd == CMD_SYSTEM) {
-        std::string message = Utils::JoinString(args.begin(), args.end(), " ");
+        std::string message = Utils::JoinString(args, " ");
         handlePrint("SYSTEM: " + message);
     }
 }

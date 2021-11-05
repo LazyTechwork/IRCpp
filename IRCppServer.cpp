@@ -6,7 +6,7 @@
 #include <CmdProcessor.h>
 
 void WriteToConsole(std::string &msg) {
-    printf("%s %s", Logger::getFormattedTime().c_str(), msg.c_str());
+    printf("%s %s\n", Logger::getFormattedTime().c_str(), msg.c_str());
 }
 
 void dataListenThread(ServerSocket *server, int clientId) {
@@ -14,8 +14,6 @@ void dataListenThread(ServerSocket *server, int clientId) {
     Server::CmdProcessor cmdProccessor(server);
     while (server->IsClientAlive(clientId)) {
         cmdProccessor.acceptMessage(clientId, server->ListenForData(clientId), (HandlePrint) WriteToConsole);
-        printf("%s Client #%d >> %s\n", Logger::getFormattedTime().c_str(), clientId,
-               server->ListenForData(clientId).c_str());
         Sleep(150);
     }
     printf("%s Client #%d dead, stopping listening for data\n", Logger::getFormattedTime().c_str(), clientId);
@@ -36,7 +34,7 @@ void connectionsListenThread(ServerSocket *server, std::vector<std::thread *> *d
 
 void pingThread(ServerSocket *server) {
     while (server->IsSocketAlive()) {
-        server->PingAllClients();
+//        server->PingAllClients();
         Sleep(25000);
     }
 }

@@ -13,10 +13,10 @@ void Server::CmdProcessor::acceptMessage(int clientId, const std::string &msg, H
     args.erase(args.begin());
     if (cmd == CMD_JOIN) {
         this->server->setClientNickname(clientId, args.at(0));
-        this->server->Broadcast(Commands[CMD_JOIN] + " " + clientInfo.nickname, clientId);
-        handlePrint(clientInfo.nickname + " joined server");
+        this->server->Broadcast(Commands[CMD_JOIN] + " " + args.at(0), clientId);
+        handlePrint(args.at(0) + " joined server");
     } else if (cmd == CMD_MESSAGE) {
-        std::string message = Utils::JoinString(std::vector(args.begin() + 1, args.end()), " ");
+        std::string message = Utils::JoinString(std::vector(args.begin(), args.end()), " ");
         this->server->Broadcast(Commands[CMD_MESSAGE] + " " + clientInfo.nickname + " " + message, clientId);
         handlePrint(clientInfo.nickname + " >> " + message);
     }

@@ -2,6 +2,8 @@
 #include <Logger.h>
 #include <CommandDefinitions.h>
 
+#include <utility>
+
 ServerSocket::ServerSocket(SocketConnection *connection) {
     this->connection = connection;
 }
@@ -59,7 +61,7 @@ int ServerSocket::Broadcast(const std::string &data, int excluding) {
             continue;
         else
             bytes_sent += this->SendData(i, data);
-
+    printf("B<< %s\n", data.c_str());
     return 0;
 }
 
@@ -87,6 +89,6 @@ const std::vector<ServerClient> &ServerSocket::getClients() const {
 }
 
 void ServerSocket::setClientNickname(int clientId, std::string nickname) {
-    this->clients.at(clientId).nickname = nickname;
+    this->clients.at(clientId).nickname = std::move(nickname);
 }
 
