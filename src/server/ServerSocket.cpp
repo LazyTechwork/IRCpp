@@ -82,3 +82,11 @@ void ServerSocket::PingAllClients() {
     }
 }
 
+const std::vector<ServerClient> &ServerSocket::getClients() const {
+    return clients;
+}
+
+void ServerSocket::setClientNickname(int clientId, std::string nickname) {
+    this->clients.at(clientId).nickname = nickname;
+}
+

@@ -4,11 +4,17 @@
 #include <thread>
 #include <Logger.h>
 #include <iostream>
+#include <CmdProccessor.h>
+
+void WriteToConsole(const std::string &msg) {
+    printf("%s %s", Logger::getFormattedTime().c_str());
+}
 
 void dataListenThread(ClientSocket *client) {
     printf("%s Started listening for data\n", Logger::getFormattedTime().c_str());
+    Client::CmdProccessor cmdProccessor(client);
     while (client->IsServerAlive()) {
-        printf("%s >> %s\n", Logger::getFormattedTime().c_str(), client->ListenForData().c_str());
+        cmdProccessor.acceptMessage(client->ListenForData(), WriteToConsole);
     }
     printf("%s Server dead, disconnecting\n", Logger::getFormattedTime().c_str());
 }

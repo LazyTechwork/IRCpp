@@ -14,6 +14,8 @@
 struct ServerClient {
     SOCKET client;
     bool isAlive;
+    int color = 0xF0;
+    std::string nickname;
 };
 
 class ServerSocket {
@@ -22,6 +24,7 @@ private:
     std::vector<ServerClient> clients = {};
 public:
     explicit ServerSocket(SocketConnection *connection);
+    const std::vector<ServerClient> &getClients() const;
 
     /**
      * Remove client from vector without shutdowning and closing connection
@@ -72,4 +75,6 @@ public:
      * Pinging all clients
      * */
     void PingAllClients();
+
+    void setClientNickname(int clientId, std::string nickname);
 };

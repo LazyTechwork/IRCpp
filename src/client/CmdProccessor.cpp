@@ -4,7 +4,7 @@ Client::CmdProccessor::CmdProccessor(ClientSocket *client) {
     this->client = client;
 }
 
-void Client::CmdProccessor::acceptMessage(std::string &msg, HandlePrint &handlePrint) {
+void Client::CmdProccessor::acceptMessage(std::string msg, HandlePrint &handlePrint) {
     std::vector<std::string> args = Utils::SplitString(msg);
     if (StringCommands.find(args.at(0)) == StringCommands.end())
         return;

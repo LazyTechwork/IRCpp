@@ -15,8 +15,8 @@ set(COMMON_HEADER_FILES src/common/SocketConnection.h src/common/SocketConstants
 set(CLIENT_SOURCE_FILES IRCppClient.cpp src/client/ClientSocket.cpp src/client/CmdProccessor.cpp)
 set(CLIENT_HEADER_FILES src/client/ClientSocket.h src/client/CmdProccessor.h)
 
-set(SERVER_SOURCE_FILES IRCppServer.cpp src/server/ServerSocket.cpp)
-set(SERVER_HEADER_FILES src/server/ServerSocket.h)
+set(SERVER_SOURCE_FILES IRCppServer.cpp src/server/ServerSocket.cpp src/server/CmdProccessor.cpp)
+set(SERVER_HEADER_FILES src/server/ServerSocket.h src/server/CmdProccessor.h)
 
 add_executable(IRCppClient ${CLIENT_SOURCE_FILES} ${CLIENT_HEADER_FILES} ${COMMON_SOURCE_FILES} ${COMMON_HEADER_FILES})
 add_executable(IRCppServer ${SERVER_SOURCE_FILES} ${SERVER_HEADER_FILES} ${COMMON_SOURCE_FILES} ${COMMON_HEADER_FILES})
