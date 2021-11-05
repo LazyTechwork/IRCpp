@@ -4,7 +4,7 @@
 #include <thread>
 #include <Logger.h>
 #include <iostream>
-#include <CmdProccessor.h>
+#include <CmdProcessor.h>
 
 void WriteToConsole(std::string &msg) {
     printf("%s %s", Logger::getFormattedTime().c_str(), msg.c_str());
@@ -12,7 +12,7 @@ void WriteToConsole(std::string &msg) {
 
 void dataListenThread(ClientSocket *client) {
     printf("%s Started listening for data\n", Logger::getFormattedTime().c_str());
-    Client::CmdProccessor cmdProccessor(client);
+    Client::CmdProcessor cmdProccessor(client);
     while (client->IsServerAlive()) {
         cmdProccessor.acceptMessage(client->ListenForData(), (HandlePrint) WriteToConsole);
     }

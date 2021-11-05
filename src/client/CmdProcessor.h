@@ -7,11 +7,11 @@
 typedef void (*HandlePrint)(std::string msg);
 
 namespace Client {
-    class CmdProccessor {
+    class CmdProcessor {
     private:
         ClientSocket *client;
     public:
-        explicit CmdProccessor(ClientSocket *client);
+        explicit CmdProcessor(ClientSocket *client);
 
         void acceptMessage(const std::string& msg, HandlePrint handlePrint);
     };

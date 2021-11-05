@@ -12,11 +12,11 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-Bstatic,--whole-archi
 set(COMMON_SOURCE_FILES src/common/SocketConnection.cpp src/common/Logger.cpp src/common/Utils.cpp)
 set(COMMON_HEADER_FILES src/common/SocketConnection.h src/common/SocketConstants.h src/common/Logger.h src/common/Utils.h src/common/CommandDefinitions.h)
 
-set(CLIENT_SOURCE_FILES IRCppClient.cpp src/client/ClientSocket.cpp src/client/CmdProccessor.cpp)
-set(CLIENT_HEADER_FILES src/client/ClientSocket.h src/client/CmdProccessor.h)
+set(CLIENT_SOURCE_FILES IRCppClient.cpp src/client/ClientSocket.cpp src/client/CmdProcessor.cpp)
+set(CLIENT_HEADER_FILES src/client/ClientSocket.h src/client/CmdProcessor.h)
 
-set(SERVER_SOURCE_FILES IRCppServer.cpp src/server/ServerSocket.cpp src/server/CmdProccessor.cpp)
-set(SERVER_HEADER_FILES src/server/ServerSocket.h src/server/CmdProccessor.h)
+set(SERVER_SOURCE_FILES IRCppServer.cpp src/server/ServerSocket.cpp src/server/CmdProcessor.cpp)
+set(SERVER_HEADER_FILES src/server/ServerSocket.h src/server/CmdProcessor.h)
 
 add_executable(IRCppClient ${CLIENT_SOURCE_FILES} ${CLIENT_HEADER_FILES} ${COMMON_SOURCE_FILES} ${COMMON_HEADER_FILES})
 add_executable(IRCppServer ${SERVER_SOURCE_FILES} ${SERVER_HEADER_FILES} ${COMMON_SOURCE_FILES} ${COMMON_HEADER_FILES})

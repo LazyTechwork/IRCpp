@@ -1,10 +1,10 @@
-#include <CmdProccessor.h>
+#include <CmdProcessor.h>
 
-Client::CmdProccessor::CmdProccessor(ClientSocket *client) {
+Client::CmdProcessor::CmdProcessor(ClientSocket *client) {
     this->client = client;
 }
 
-void Client::CmdProccessor::acceptMessage(const std::string& msg, HandlePrint handlePrint) {
+void Client::CmdProcessor::acceptMessage(const std::string& msg, HandlePrint handlePrint) {
     std::vector<std::string> args = Utils::SplitString(msg);
     if (StringCommands.find(args.at(0)) == StringCommands.end())
         return;
