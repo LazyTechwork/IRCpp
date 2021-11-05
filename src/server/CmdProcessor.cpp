@@ -17,7 +17,7 @@ void Server::CmdProcessor::acceptMessage(int clientId, const std::string &msg, H
         handlePrint(args.at(0) + " joined server");
     } else if (cmd == CMD_MESSAGE) {
         std::string message = Utils::JoinString(std::vector(args.begin(), args.end()), " ");
-        this->server->Broadcast(Commands[CMD_MESSAGE] + " " + clientInfo.nickname + " " + message, clientId);
+        this->server->Broadcast(Commands[CMD_MESSAGE] + " " + clientInfo.nickname + " " + message);
         handlePrint(clientInfo.nickname + " >> " + message);
     }
 }
