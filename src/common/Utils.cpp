@@ -1,6 +1,6 @@
 #include "Utils.h"
 
-std::vector<std::string> Utils::SplitString(std::string &str, char delimiter) {
+std::vector<std::string> Utils::SplitString(const std::string &str, char delimiter) {
     std::stringstream test(str);
     std::string segment;
     std::vector<std::string> seglist;
@@ -10,9 +10,8 @@ std::vector<std::string> Utils::SplitString(std::string &str, char delimiter) {
     return seglist;
 }
 
-template <typename Iter>
-std::string Utils::JoinString(Iter begin, Iter end, std::string const& separator)
-{
+template<typename I>
+std::string Utils::JoinString(I begin, I end, std::string separator) {
     std::ostringstream result;
     if (begin != end)
         result << *begin++;

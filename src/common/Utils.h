@@ -6,8 +6,8 @@
 
 
 namespace Utils {
-    std::vector<std::string> SplitString(std::string &str, char delimiter = ' ');
+    std::vector<std::string> SplitString(const std::string &str, char delimiter = ' ');
 
-    template <typename Iter>
-    std::string JoinString(Iter begin, Iter end, const std::string &separator);
+    template <typename I>
+    std::string JoinString(I begin, I end, std::string separator);
 }
