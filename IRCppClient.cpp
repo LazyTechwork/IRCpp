@@ -6,15 +6,15 @@
 #include <iostream>
 #include <CmdProccessor.h>
 
-void WriteToConsole(const std::string &msg) {
-    printf("%s %s", Logger::getFormattedTime().c_str());
+void WriteToConsole(std::string &msg) {
+    printf("%s %s", Logger::getFormattedTime().c_str(), msg.c_str());
 }
 
 void dataListenThread(ClientSocket *client) {
     printf("%s Started listening for data\n", Logger::getFormattedTime().c_str());
     Client::CmdProccessor cmdProccessor(client);
     while (client->IsServerAlive()) {
-        cmdProccessor.acceptMessage(client->ListenForData(), WriteToConsole);
+        cmdProccessor.acceptMessage(client->ListenForData(), (HandlePrint) WriteToConsole);
     }
     printf("%s Server dead, disconnecting\n", Logger::getFormattedTime().c_str());
 }
@@ -24,13 +24,21 @@ int main() {
     system("chcp 65001");
     system("cls");
 
+    std::string nickname;
+    std::cout << "Enter nickname: ";
+    std::cin >> nickname;
+    std::cout << std::endl;
+
     const char IP[] = "127.0.0.1";
     const char PORT[] = "1376";
     auto *socketConnection = new SocketConnection();
     socketConnection->CreateClient(IP, PORT);
     auto *client = new ClientSocket(socketConnection);
+
     printf("%s Creating threads for listening...\n", Logger::getFormattedTime().c_str());
     std::thread dataThread(dataListenThread, client);
+
+    client->SendData(Commands[CMD_JOIN] + " " + nickname);
 
     std::string buf;
     while (buf != "!quit") {
@@ -39,7 +47,7 @@ int main() {
     }
 
     _getch();
-    client->SendData("!disconnect");
+    client->SendData(Commands[CMD_PART]);
     //    Terminating threads
     dataThread.detach();
     TerminateThread((HANDLE) dataThread.native_handle(), 0);

@@ -78,7 +78,7 @@ bool ServerSocket::IsSocketAlive() {
 void ServerSocket::PingAllClients() {
     for (int i = 0, l = (int) this->clients.size(); i < l; ++i) {
         if (this->clients.at(i).isAlive)
-            this->SendData(i, CMD_PING);
+            this->SendData(i, Commands[CMD_PING]);
     }
 }
 

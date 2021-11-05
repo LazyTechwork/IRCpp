@@ -4,7 +4,7 @@
 #include <Utils.h>
 #include <CommandDefinitions.h>
 
-typedef void (*HandlePrint)(const std::string &msg);
+typedef void (*HandlePrint)(std::string msg);
 
 namespace Client {
     class CmdProccessor {
@@ -13,6 +13,6 @@ namespace Client {
     public:
         explicit CmdProccessor(ClientSocket *client);
 
-        void acceptMessage(std::string msg, HandlePrint &handlePrint);
+        void acceptMessage(const std::string& msg, HandlePrint handlePrint);
     };
 }

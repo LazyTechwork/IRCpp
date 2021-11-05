@@ -10,12 +10,13 @@ std::vector<std::string> Utils::SplitString(const std::string &str, char delimit
     return seglist;
 }
 
-template<typename I>
-std::string Utils::JoinString(I begin, I end, std::string separator) {
+std::string Utils::JoinString(const std::vector<std::string> &str, const std::string &separator) {
     std::ostringstream result;
+    auto begin = str.begin();
+    auto end = str.end();
     if (begin != end)
         result << *begin++;
     while (begin != end)
         result << separator << *begin++;
-    return result.str();
+    return (result.str());
 }
