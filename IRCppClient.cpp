@@ -42,10 +42,11 @@ int main() {
     client->SendData(Commands[CMD_JOIN] + " " + nickname);
 
     std::string buf;
-    std::cin >> buf;
+    std::getline(std::cin, buf);
     while (buf != "!quit") {
-        client->SendData(Commands[CMD_MESSAGE] + " " + buf);
-        std::cin >> buf;
+        if (!buf.empty())
+            client->SendData(Commands[CMD_MESSAGE] + " " + buf);
+        std::getline(std::cin, buf);
     }
 
     _getch();
