@@ -23,6 +23,8 @@ void connectionsListenThread(ServerSocket *server, std::vector<std::thread *> *d
     printf("%s Started connections listening\n", Logger::getFormattedTime().c_str());
     while (server->IsSocketAlive()) {
         int clientId = server->WaitForConnection();
+        if (clientId < 0)
+            return;
         server->SendData(clientId, "Successfully connected!");
         std::thread dlt(dataListenThread, server, clientId);
         dlt.detach();
@@ -56,9 +58,8 @@ int main() {
     std::thread pinger(pingThread, server);
 
     _getch();
+
 //    Terminating threads
-    connectionsThread.detach();
-    pinger.detach();
     TerminateThread((HANDLE) pinger.native_handle(), 0);
     TerminateThread((HANDLE) connectionsThread.native_handle(), 0);
     for (auto &thread: dataListenThreads)

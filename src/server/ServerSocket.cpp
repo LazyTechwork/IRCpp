@@ -8,10 +8,11 @@ ServerSocket::ServerSocket(SocketConnection *connection) {
 }
 
 int ServerSocket::WaitForConnection() {
+    if (!this->IsSocketAlive())
+        return -1;
     SOCKET sock = this->connection->getSocket();
     SOCKET incomingConnection = accept(sock, nullptr, nullptr);
     if (incomingConnection == INVALID_SOCKET) {
-        printf("%s Accept failed: %d\n", Logger::getFormattedTime().c_str(), WSAGetLastError());
         closesocket(sock);
         WSACleanup();
         return -1;
