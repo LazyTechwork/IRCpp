@@ -2,7 +2,6 @@
 #include <Logger.h>
 #include <CommandDefinitions.h>
 
-#include <utility>
 
 ServerSocket::ServerSocket(SocketConnection *connection) {
     this->connection = connection;
@@ -70,7 +69,7 @@ void ServerSocket::DeleteClient(int clientId) {
 }
 
 bool ServerSocket::IsClientAlive(int clientId) {
-    return this->clients.at(clientId).isAlive;
+    return this->clients.size() > clientId && this->clients.at(clientId).isAlive;
 }
 
 bool ServerSocket::IsSocketAlive() {

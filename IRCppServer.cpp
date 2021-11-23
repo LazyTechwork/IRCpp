@@ -66,5 +66,6 @@ int main() {
 
 //    Closing socket connection
     socketConnection->CloseConnection();
+    system("pause");
     return 0;
 }

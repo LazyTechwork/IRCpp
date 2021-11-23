@@ -5,10 +5,14 @@ Server::CmdProcessor::CmdProcessor(ServerSocket *server) {
 }
 
 void Server::CmdProcessor::acceptMessage(int clientId, const std::string &msg, HandlePrint handlePrint) {
+    if (msg.empty())
+        return;
     std::vector<std::string> args = Utils::SplitString(msg);
     if (StringCommands.find(args.at(0)) == StringCommands.end())
         return;
     int cmd = StringCommands.at(args.at(0));
+    if (!this->server->IsClientAlive(clientId))
+        return;
     ServerClient clientInfo = this->server->getClients().at(clientId);
     args.erase(args.begin());
     if (cmd == CMD_JOIN) {
