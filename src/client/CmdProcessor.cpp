@@ -4,7 +4,7 @@ Client::CmdProcessor::CmdProcessor(ClientSocket *client) {
     this->client = client;
 }
 
-void Client::CmdProcessor::acceptMessage(const std::string& msg, HandlePrint handlePrint) {
+void Client::CmdProcessor::acceptMessage(const std::string& msg, MessageList *msglist, HandlePrint handlePrint) {
     std::vector<std::string> args = Utils::SplitString(msg);
     if (StringCommands.find(args.at(0)) == StringCommands.end())
         return;
@@ -13,15 +13,15 @@ void Client::CmdProcessor::acceptMessage(const std::string& msg, HandlePrint han
     if (cmd == CMD_PING) {
         this->client->SendData(Commands[CMD_PONG]);
     } else if (cmd == CMD_JOIN) {
-        handlePrint(args.at(0) + " joined server");
+        handlePrint(args.at(0) + " joined server", msglist);
     } else if (cmd == CMD_WHISPER) {
         std::string message = Utils::JoinString(std::vector(args.begin() + 1, args.end()), " ");
-        handlePrint(args.at(0) + " whispered you: " + message);
+        handlePrint(args.at(0) + " whispered you: " + message, msglist);
     } else if (cmd == CMD_MESSAGE) {
         std::string message = Utils::JoinString(std::vector(args.begin() + 1, args.end()), " ");
-        handlePrint(args.at(0) + " >> " + message);
+        handlePrint(args.at(0) + " >> " + message, msglist);
     } else if (cmd == CMD_SYSTEM) {
         std::string message = Utils::JoinString(args, " ");
-        handlePrint("SYSTEM: " + message);
+        handlePrint("SYSTEM: " + message, msglist);
     }
 }

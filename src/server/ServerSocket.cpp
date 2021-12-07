@@ -27,7 +27,7 @@ std::string ServerSocket::ListenForData(int clientId) {
     if (Client == 0 || !this->clients.at(clientId).isAlive)
         return "";
     int iResult = recv(Client, recvbuf, DEFAULT_BUFLEN, 0);
-    if (iResult == -1) {
+    if (iResult <= 0) {
         printf("%s Client #%d closed connection. removing from clients list\n", Logger::getFormattedTime().c_str(),
                clientId);
         this->DeleteClient(clientId);

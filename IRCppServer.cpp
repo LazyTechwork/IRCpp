@@ -58,15 +58,15 @@ int main() {
     std::thread pinger(pingThread, server);
 
     _getch();
+    socketConnection->CloseConnection();
 
 //    Terminating threads
-    TerminateThread((HANDLE) pinger.native_handle(), 0);
-    TerminateThread((HANDLE) connectionsThread.native_handle(), 0);
+//    TerminateThread((HANDLE) pinger.native_handle(), 0);
+//    TerminateThread((HANDLE) connectionsThread.native_handle(), 0);
+    pinger.join();
+    connectionsThread.join();
     for (auto &thread: dataListenThreads)
-        TerminateThread((HANDLE) thread->native_handle(), 0);
-
-//    Closing socket connection
-    socketConnection->CloseConnection();
+        thread->join();
     system("pause");
     return 0;
 }

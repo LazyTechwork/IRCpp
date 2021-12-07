@@ -3,8 +3,10 @@
 #include <ClientSocket.h>
 #include <Utils.h>
 #include <CommandDefinitions.h>
+#include "ftxui/component/component_base.hpp"
+#include "GUIReferences.h"
 
-typedef void (*HandlePrint)(std::string msg);
+typedef void (*HandlePrint)(std::string msg, MessageList *msglist);
 
 namespace Client {
     class CmdProcessor {
@@ -13,6 +15,6 @@ namespace Client {
     public:
         explicit CmdProcessor(ClientSocket *client);
 
-        void acceptMessage(const std::string& msg, HandlePrint handlePrint);
+        void acceptMessage(const std::string &msg, MessageList *msglist, HandlePrint handlePrint);
     };
 }
