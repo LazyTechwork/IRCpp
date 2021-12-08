@@ -27,7 +27,7 @@ void connectionsListenThread(ServerSocket *server, std::vector<std::thread *> *d
             return;
         server->SendData(clientId, "Successfully connected!");
         std::thread dlt(dataListenThread, server, clientId);
-        dlt.join();
+        dlt.detach();
         dataListenThreads->push_back(&dlt);
         Sleep(150);
     }
