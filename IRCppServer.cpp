@@ -57,7 +57,7 @@ int main() {
     std::thread connectionsThread(connectionsListenThread, server, &dataListenThreads);
     std::thread pinger(pingThread, server);
 
-    _getch();
+    while(_getch() != 'Q');
     socketConnection->CloseConnection();
 
 //    Terminating threads

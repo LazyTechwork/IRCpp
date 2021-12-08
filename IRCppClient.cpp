@@ -39,38 +39,51 @@ int main() {
 
 //  ===  LOGIN SCREEN ===
     auto SCREEN = ScreenInteractive::Fullscreen();
-    auto closeScreenButton = Button("OK", SCREEN.ExitLoopClosure());
 
     std::string nickname;
     std::string ip = "127.0.0.1:1376";
 
-    Component inputIp, inputNickname;
+    auto LoginProceedButton = Button("Log in", SCREEN.ExitLoopClosure());
+    Component IpInput, NicknameInput;
     auto NicknameInputOptions = InputOption();
     NicknameInputOptions.on_enter = [&] {
-        inputIp->TakeFocus();
+        if (!nickname.empty())
+            IpInput->TakeFocus();
     };
     auto IpInputOptions = InputOption();
     IpInputOptions.on_enter = [&] {
-        closeScreenButton->OnEvent(Event::Return);
+        if (!ip.empty()) {
+            LoginProceedButton->TakeFocus();
+            LoginProceedButton->OnEvent(Event::Return);
+        }
     };
-    inputNickname = Input(&nickname, "", NicknameInputOptions);
-    inputIp = Input(&ip, "", IpInputOptions);
-    auto component = Container::Vertical({inputNickname, inputIp, closeScreenButton});
+    NicknameInput = Input(&nickname, "", NicknameInputOptions);
+    IpInput = Input(&ip, "", IpInputOptions);
+    auto component = Container::Vertical({NicknameInput, IpInput, LoginProceedButton});
     auto loginScreen = Renderer(component, [&] {
         return vbox(
                 text(""),
                 text("Connect to IRCpp chat") | center,
                 text(""),
                 separator(),
-                vbox(
-                        hbox(text("  Enter nickname      "), inputNickname->Render()),
-                        hbox(text("  Enter IP (ip:port)  "), inputIp->Render()),
-                        closeScreenButton->Render()
+                hbox(
+                        text("    "),
+                        vbox(
+                                text(""),
+                                hbox(text("  Enter nickname      ") | vcenter,
+                                     hbox(text("  "), NicknameInput->Render() | size(WIDTH, EQUAL, 25), text("  ")) |
+                                     border) | hcenter,
+                                hbox(text("  Enter IP (ip:port)  ") | vcenter,
+                                     hbox(text("  "), IpInput->Render() | size(WIDTH, EQUAL, 25), text("  ")) |
+                                     border) | hcenter,
+                                color(Color::LightGreen, LoginProceedButton->Render()) | hcenter
+                        ) | flex,
+                        text("    ")
                 ) | flex
         );
     });
 
-    SCREEN.Loop(loginScreen);
+    while (nickname.empty() || ip.empty()) { SCREEN.Loop(loginScreen); }
 
     auto *socketConnection = new SocketConnection();
     socketConnection->CreateClient(ip.substr(0, ip.find(':')).c_str(), ip.substr(ip.find(':') + 1).c_str());
@@ -83,20 +96,20 @@ int main() {
 
     std::string buf;
 
-    auto PartButton = Button("Part", SCREEN.ExitLoopClosure());
-    auto SendButton = Button("Send", [&] {
+    auto SendAction = [&] {
         if (!buf.empty()) {
             client->SendData(Commands[CMD_MESSAGE] + " " + buf);
             buf.clear();
             return true;
         }
         return false;
-    });
-    auto MessageInputOptions = InputOption();
-    MessageInputOptions.on_enter = [&] {
-        SendButton->OnEvent(Event::Return);
-        return true;
     };
+
+    auto PartButton = Button("Part", SCREEN.ExitLoopClosure());
+    auto SendButton = Button("Send", SendAction);
+    auto MessageInputOptions = InputOption();
+//    BUG: Field does not clear
+    MessageInputOptions.on_enter = SendAction;
     auto MessageInput = Input(&buf, "", MessageInputOptions);
     component = Container::Vertical({MessageInput, SendButton, PartButton});
     auto chatScreen = Renderer(component, [&] {
@@ -105,11 +118,15 @@ int main() {
             chatbox.push_back(renderChatMessage(message));
 
         return vbox(
+                text(""),
                 text("Connected to IRCpp Chat (" + ip + ") as " + nickname) | center,
                 separator(),
-                vbox(std::move(chatbox)) | frame | size(HEIGHT, LESS_THAN, 30) | size(HEIGHT, GREATER_THAN, 10) |
-                border,
-                hbox(text("    "), MessageInput->Render() | flex | border, SendButton->Render(),
+                hbox(text("    "),
+                     vbox(std::move(chatbox)) | frame | size(HEIGHT, LESS_THAN, 30) | size(HEIGHT, GREATER_THAN, 15) |
+                     border | flex,
+                     text("    ")),
+                hbox(text("    "), hbox(text("  "), MessageInput->Render(), text("  ")) | flex | border,
+                     SendButton->Render(),
                      color(Color::Red, PartButton->Render()),
                      text("    "))
         ) | flex;
