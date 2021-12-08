@@ -38,17 +38,10 @@ set(SERVER_HEADER_FILES src/server/ServerSocket.h src/server/CmdProcessor.h)
 
 add_executable(IRCppClient  ${COMMON_HEADER_FILES} ${COMMON_SOURCE_FILES} ${CLIENT_HEADER_FILES} ${CLIENT_SOURCE_FILES})
 add_executable(IRCppServer  ${COMMON_HEADER_FILES} ${COMMON_SOURCE_FILES} ${SERVER_HEADER_FILES} ${SERVER_SOURCE_FILES})
-add_executable(IRCppSandbox Sandbox.cpp)
 
 target_include_directories(IRCppClient PRIVATE src/client src/common)
 target_include_directories(IRCppServer PRIVATE src/server src/common)
-target_include_directories(IRCppSandbox PRIVATE src/client src/server src/common)
 target_link_libraries(IRCppClient
-        PRIVATE ftxui::screen
-        PRIVATE ftxui::dom
-        PRIVATE ftxui::component
-        )
-target_link_libraries(IRCppSandbox
         PRIVATE ftxui::screen
         PRIVATE ftxui::dom
         PRIVATE ftxui::component

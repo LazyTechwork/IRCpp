@@ -27,7 +27,7 @@ void connectionsListenThread(ServerSocket *server, std::vector<std::thread *> *d
             return;
         server->SendData(clientId, "Successfully connected!");
         std::thread dlt(dataListenThread, server, clientId);
-        dlt.detach();
+        dlt.join();
         dataListenThreads->push_back(&dlt);
         Sleep(150);
     }
@@ -57,16 +57,16 @@ int main() {
     std::thread connectionsThread(connectionsListenThread, server, &dataListenThreads);
     std::thread pinger(pingThread, server);
 
-    while(_getch() != 'Q');
+    printf("===== TO STOP SERVER PRESS SHIFT+Q =====\n");
+    while (_getch() != 'Q');
+    printf("%s Starting connection close...\n", Logger::getFormattedTime().c_str());
     socketConnection->CloseConnection();
 
 //    Terminating threads
 //    TerminateThread((HANDLE) pinger.native_handle(), 0);
 //    TerminateThread((HANDLE) connectionsThread.native_handle(), 0);
-    pinger.join();
+    pinger.detach();
     connectionsThread.join();
-    for (auto &thread: dataListenThreads)
-        thread->join();
     system("pause");
     return 0;
 }
