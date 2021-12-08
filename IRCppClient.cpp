@@ -5,14 +5,6 @@
 #include <CmdProcessor.h>
 #include <GUIReferences.h>
 
-#include "ftxui/component/captured_mouse.hpp"  // for ftxui
-#include "ftxui/component/component.hpp"       // for Input, Renderer, Vertical
-#include "ftxui/component/component_base.hpp"  // for ComponentBase
-#include "ftxui/component/component_options.hpp"  // for InputOption
-#include "ftxui/component/screen_interactive.hpp"  // for Component, ScreenInteractive
-#include "ftxui/dom/elements.hpp"  // for text, hbox, separator, Element, operator|, vbox, border
-#include "ftxui/util/ref.hpp"  // for Ref
-
 void WriteToConsole(std::string &msg, MessageList *msglist) {
     using namespace ftxui;
     if (msglist->size() + 1 > 30) {
@@ -21,14 +13,14 @@ void WriteToConsole(std::string &msg, MessageList *msglist) {
     msglist->push_back({Logger::getFormattedTime(), msg});
 }
 
-void dataListenThread(ClientSocket *client, MessageList *msglist) {
+void dataListenThread(ClientSocket *client, MessageList *msglist, bool *isServerDead) {
     printf("%s Started listening for data\n", Logger::getFormattedTime().c_str());
     Client::CmdProcessor cmdProccessor(client);
     while (client->IsServerAlive()) {
         cmdProccessor.acceptMessage(client->ListenForData(), msglist, (HandlePrint) WriteToConsole);
     }
 //    printf("%s Server dead, disconnecting\n", Logger::getFormattedTime().c_str());
-    exit(0);
+    *isServerDead = true;
 }
 
 int main() {
@@ -59,8 +51,8 @@ int main() {
     };
     NicknameInput = Input(&nickname, "", NicknameInputOptions);
     IpInput = Input(&ip, "", IpInputOptions);
-    auto component = Container::Vertical({NicknameInput, IpInput, LoginProceedButton});
-    auto loginScreen = Renderer(component, [&] {
+    auto LoginScreenComponent = Container::Vertical({NicknameInput, IpInput, LoginProceedButton});
+    auto loginScreen = Renderer(LoginScreenComponent, [&] {
         return vbox(
                 text(""),
                 text("Connect to IRCpp chat") | center,
@@ -85,12 +77,13 @@ int main() {
 
     while (nickname.empty() || ip.empty()) { SCREEN.Loop(loginScreen); }
 
+    bool isServerDead = false;
     auto *socketConnection = new SocketConnection();
     socketConnection->CreateClient(ip.substr(0, ip.find(':')).c_str(), ip.substr(ip.find(':') + 1).c_str());
     auto *client = new ClientSocket(socketConnection);
 
     MessageList msglist;
-    std::thread dataThread(dataListenThread, client, &msglist);
+    std::thread dataThread(dataListenThread, client, &msglist, &isServerDead);
 
     client->SendData(Commands[CMD_JOIN] + " " + nickname);
 
@@ -106,13 +99,33 @@ int main() {
     };
 
     auto PartButton = Button("Part", SCREEN.ExitLoopClosure());
+    auto OKCloseButton = Button("    OK    ", SCREEN.ExitLoopClosure());
     auto SendButton = Button("Send", SendAction);
     auto MessageInputOptions = InputOption();
 //    BUG: Field does not clear
     MessageInputOptions.on_enter = SendAction;
     auto MessageInput = Input(&buf, "", MessageInputOptions);
-    component = Container::Vertical({MessageInput, SendButton, PartButton});
-    auto chatScreen = Renderer(component, [&] {
+    auto ChatScreenComponent = Container::Vertical({MessageInput, SendButton, PartButton, OKCloseButton});
+    auto chatScreen = Renderer(ChatScreenComponent, [&] {
+
+        if (isServerDead) {
+            return vbox(
+                    text(""),
+                    text(""),
+                    vbox(
+                            text(""),
+                            color(Color::Red, text("Cannot connect to server!")) | center,
+                            color(Color::GrayLight,
+                                  text("    Please check is server alive and reconnect manually    ")) |
+                            center,
+                            text(""),
+                            color(Color::BlueLight, OKCloseButton->Render()) | center,
+                            text("")
+                    ) | border | center,
+                    text(""),
+                    text(""));
+        }
+
         Elements chatbox;
         for (auto &message: msglist)
             chatbox.push_back(renderChatMessage(message));
@@ -137,7 +150,7 @@ int main() {
     client->SendData(Commands[CMD_PART]);
     client->Shutdown();
     //    Terminating threads
-    dataThread.join();
-    TerminateThread((HANDLE) dataThread.native_handle(), 0);
+    if (dataThread.joinable())
+        dataThread.join();
     return EXIT_SUCCESS;
 }
