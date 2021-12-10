@@ -38,7 +38,6 @@ int main() {
 
     std::string nickname;
     std::string ip;
-    bool isFieldsDirty = false;
     if (ConfigurationFile) {
         ConfigurationFile >> nickname;
         ConfigurationFile >> ip;
@@ -54,18 +53,12 @@ int main() {
         if (!nickname.empty())
             IpInput->TakeFocus();
     };
-    NicknameInputOptions.on_change = [&] {
-        isFieldsDirty = true;
-    };
     auto IpInputOptions = InputOption();
     IpInputOptions.on_enter = [&] {
         if (!ip.empty()) {
             LoginProceedButton->TakeFocus();
             LoginProceedButton->OnEvent(Event::Return);
         }
-    };
-    IpInputOptions.on_change = [&] {
-        isFieldsDirty = true;
     };
     NicknameInput = Input(&nickname, "", NicknameInputOptions);
     IpInput = Input(&ip, "", IpInputOptions);
@@ -93,7 +86,8 @@ int main() {
         );
     });
 
-    while (nickname.empty() || ip.empty() || !isFieldsDirty) { SCREEN.Loop(loginScreen); }
+    SCREEN.Loop(loginScreen);
+    while (nickname.empty() || ip.empty()) { SCREEN.Loop(loginScreen); }
 
     ConfigurationFile.open("IRCpp.cfg", std::fstream::out | std::fstream::trunc);
     ConfigurationFile << nickname << std::endl << ip;
