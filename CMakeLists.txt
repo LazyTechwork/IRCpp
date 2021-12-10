@@ -18,7 +18,7 @@ endif ()
 # Project
 
 project(IRCpp
-        VERSION 0.1.0
+        VERSION 0.1.1
         LANGUAGES CXX
         DESCRIPTION "Simple IRC realization on C++")
 
