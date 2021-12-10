@@ -48,7 +48,7 @@ int main() {
 
     const char PORT[] = "1376";
     auto *socketConnection = new SocketConnection();
-    socketConnection->CreateServer(PORT);
+    socketConnection->CreateServer(PORT, "0.0.0.0");
     socketConnection->OpenServerConnection();
     auto *server = new ServerSocket(socketConnection);
 
