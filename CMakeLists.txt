@@ -24,19 +24,8 @@ project(IRCpp
 
 include(generate_product_version.cmake)
 generate_product_version(
-        VERSION_FILE_CLIENT
-        NAME "IRCpp / Client"
-        ICON "${CMAKE_SOURCE_DIR}/icons/common.ico"
-        VERSION_MAJOR ${CMAKE_PROJECT_VERSION_MAJOR}
-        VERSION_MINOR ${CMAKE_PROJECT_VERSION_MINOR}
-        VERSION_PATCH ${CMAKE_PROJECT_VERSION_PATCH}
-        VERSION_REVISION ${BUILD_REVISION}
-        COMPANY_NAME "Ivan Petrov (LazyTechwork)"
-        COMPANY_COPYRIGHT "(c) 2021, Ivan Petrov and IISD Foundation"
-)
-generate_product_version(
-        VERSION_FILE_SERVER
-        NAME "IRCpp / Server"
+        VERSION_FILE
+        NAME "IRCpp Project"
         ICON "${CMAKE_SOURCE_DIR}/icons/common.ico"
         VERSION_MAJOR ${CMAKE_PROJECT_VERSION_MAJOR}
         VERSION_MINOR ${CMAKE_PROJECT_VERSION_MINOR}
@@ -60,8 +49,8 @@ set(CLIENT_HEADER_FILES src/client/ClientSocket.h src/client/CmdProcessor.h src/
 set(SERVER_SOURCE_FILES IRCppServer.cpp src/server/ServerSocket.cpp src/server/CmdProcessor.cpp)
 set(SERVER_HEADER_FILES src/server/ServerSocket.h src/server/CmdProcessor.h)
 
-add_executable(IRCppClient ${COMMON_HEADER_FILES} ${COMMON_SOURCE_FILES} ${CLIENT_HEADER_FILES} ${CLIENT_SOURCE_FILES} ${VERSION_FILE_CLIENT})
-add_executable(IRCppServer ${COMMON_HEADER_FILES} ${COMMON_SOURCE_FILES} ${SERVER_HEADER_FILES} ${SERVER_SOURCE_FILES} ${VERSION_FILE_SERVER})
+add_executable(IRCppClient ${COMMON_HEADER_FILES} ${COMMON_SOURCE_FILES} ${CLIENT_HEADER_FILES} ${CLIENT_SOURCE_FILES} ${VERSION_FILE})
+add_executable(IRCppServer ${COMMON_HEADER_FILES} ${COMMON_SOURCE_FILES} ${SERVER_HEADER_FILES} ${SERVER_SOURCE_FILES} ${VERSION_FILE})
 
 target_include_directories(IRCppClient PRIVATE src/client src/common)
 target_include_directories(IRCppServer PRIVATE src/server src/common)

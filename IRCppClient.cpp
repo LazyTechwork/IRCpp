@@ -4,6 +4,7 @@
 #include <Logger.h>
 #include <CmdProcessor.h>
 #include <GUIReferences.h>
+#include <fstream>
 
 void WriteToConsole(std::string &msg, MessageList *msglist) {
     using namespace ftxui;
@@ -32,8 +33,19 @@ int main() {
 //  ===  LOGIN SCREEN ===
     auto SCREEN = ScreenInteractive::Fullscreen();
 
+    std::fstream ConfigurationFile;
+    ConfigurationFile.open("IRCpp.cfg", std::fstream::in | std::fstream::app);
+
     std::string nickname;
-    std::string ip = "127.0.0.1:1376";
+    std::string ip;
+    bool isFieldsDirty = false;
+    if (ConfigurationFile) {
+        ConfigurationFile >> nickname;
+        ConfigurationFile >> ip;
+    }
+    if (ip.empty())
+        ip = "127.0.0.1:1376";
+    ConfigurationFile.close();
 
     auto LoginProceedButton = Button("Log in", SCREEN.ExitLoopClosure());
     Component IpInput, NicknameInput;
@@ -42,12 +54,18 @@ int main() {
         if (!nickname.empty())
             IpInput->TakeFocus();
     };
+    NicknameInputOptions.on_change = [&] {
+        isFieldsDirty = true;
+    };
     auto IpInputOptions = InputOption();
     IpInputOptions.on_enter = [&] {
         if (!ip.empty()) {
             LoginProceedButton->TakeFocus();
             LoginProceedButton->OnEvent(Event::Return);
         }
+    };
+    IpInputOptions.on_change = [&] {
+        isFieldsDirty = true;
     };
     NicknameInput = Input(&nickname, "", NicknameInputOptions);
     IpInput = Input(&ip, "", IpInputOptions);
@@ -75,7 +93,11 @@ int main() {
         );
     });
 
-    while (nickname.empty() || ip.empty()) { SCREEN.Loop(loginScreen); }
+    while (nickname.empty() || ip.empty() || !isFieldsDirty) { SCREEN.Loop(loginScreen); }
+
+    ConfigurationFile.open("IRCpp.cfg", std::fstream::out | std::fstream::trunc);
+    ConfigurationFile << nickname << std::endl << ip;
+    ConfigurationFile.close();
 
     bool isServerDead = false;
     auto *socketConnection = new SocketConnection();
